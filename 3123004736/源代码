@@ -23,3 +23,41 @@
             System.exit(3);
         }
     }
+/**
+     * 统计文件字符频率
+     * @param path 文件路径
+     * @return 字符频率映射表（Key为字符，Value为出现次数）
+     * @throws IOException 当文件读取失败时抛出
+     */
+    private static Map<Character, Integer> countChars(String path) throws IOException {
+        Map<Character, Integer> freq = new HashMap<>();
+
+        // 使用UTF-8字符集读取文件
+        try (BufferedReader br = Files.newBufferedReader(Paths.get(path), StandardCharsets.UTF_8)) {
+            boolean skipNext = false;  // 用于跳过\r后的\n
+            int charCode;
+
+            // 逐个字符读取文件内容
+            while ((charCode = br.read()) != -1) {
+                if (skipNext) {
+                    skipNext = false;
+                    continue;
+                }
+
+                char c = (char) charCode;
+
+                // 统一换行符处理：将\r或\r\n统一转换为\n
+                if (c == '\r') {
+                    c = '\n';
+                    // 检查下一个字符是否是\n（处理Windows换行符）
+                    if (br.ready() && br.read() == '\n') {
+                        skipNext = true;  // 跳过下一个字符
+                    }
+                }
+
+                // 更新字符频率统计
+                freq.put(c, freq.getOrDefault(c, 0) + 1);
+            }
+        }
+        return freq;
+    }
