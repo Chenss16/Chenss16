@@ -1,7 +1,7 @@
  public static void main(String[] args) {
         // 参数校验：必须包含3个参数
         if (args.length != 3) {
-            System.err.println("测试文件出错");
+            System.err.println("请正确提供三个文件路径");
             System.exit(1);
         }
 
