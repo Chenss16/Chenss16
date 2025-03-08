@@ -61,3 +61,50 @@
         }
         return freq;
     }
+ /**
+     * 计算余弦相似度
+     * @param a 第一个字符频率向量
+     * @param b 第二个字符频率向量
+     * @return 余弦相似度值（范围0.0-1.0）
+     */
+    private static double cosineSimilarity(Map<Character, Integer> a, Map<Character, Integer> b) {
+        // 合并两个向量的所有特征字符
+        Set<Character> keys = new HashSet<>(a.keySet());
+        keys.addAll(b.keySet());
+
+        // 计算点积
+        double dot = keys.stream()
+                .mapToDouble(k -> a.getOrDefault(k, 0) * b.getOrDefault(k, 0))
+                .sum();
+
+        // 计算向量模长
+        double magA = Math.sqrt(a.values().stream()
+                .mapToDouble(v -> Math.pow(v, 2)).sum());
+        double magB = Math.sqrt(b.values().stream()
+                .mapToDouble(v -> Math.pow(v, 2)).sum());
+
+        // 处理除零情况（当至少一个向量全零时返回0.0）
+        return magA * magB == 0 ? 0.0 : dot / (magA * magB);
+    }
+
+    /**
+     * 将结果写入指定文件
+     * @param path 输出文件路径
+     * @param content 要写入的内容
+     * @throws IOException 当文件写入失败时抛出
+     */
+    private static void writeResult(String path, String content) throws IOException {
+        Path output = Paths.get(path);
+        // 确保父目录存在
+        Files.createDirectories(output.getParent());
+
+        // 写入内容到文件（UTF-8编码）
+        Files.writeString(
+                output,
+                content,
+                StandardCharsets.UTF_8,
+                StandardOpenOption.CREATE,        // 文件不存在时创建
+                StandardOpenOption.TRUNCATE_EXISTING  // 文件存在时清空
+        );
+    }
+}
